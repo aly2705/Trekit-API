@@ -1,105 +1,75 @@
 // const mongoose = require("mongoose");
+const catchAsync = require("../utilities/catchAsync");
 const Trip = require("../models/tripModel");
+const AppError = require("../utilities/AppError");
 
-exports.getAllTrips = async (req, res, next) => {
-  try {
-    const trips = await Trip.find();
+exports.getAllTrips = catchAsync(async (req, res, next) => {
+  const trips = await Trip.find();
 
-    res.status(200).json({
-      status: "success",
-      results: trips.length,
-      data: {
-        trips,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      error: err.message,
-    });
-  }
-};
+  res.status(200).json({
+    status: "success",
+    results: trips.length,
+    data: {
+      trips,
+    },
+  });
+});
 
-exports.createNewTrip = async (req, res, next) => {
-  try {
-    const trips = await Trip.create(req.body);
+exports.createNewTrip = catchAsync(async (req, res, next) => {
+  const trips = await Trip.create(req.body);
 
-    res.status(201).json({
-      status: "success",
-      results: trips.length,
-      data: {
-        trips,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      error: err.message,
-    });
-  }
-};
+  res.status(201).json({
+    status: "success",
+    results: trips.length,
+    data: {
+      trips,
+    },
+  });
+});
 
-exports.getTripById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+exports.getTripById = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
 
-    const trip = await Trip.findById(id);
+  const trip = await Trip.findById(id);
 
-    res.status(200).json({
-      status: "success",
-      data: {
-        trip,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      error: err.message,
-    });
-  }
-};
+  if (!trip) return next(new AppError("No data found with that id", 404));
 
-exports.updateTrip = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+  res.status(200).json({
+    status: "success",
+    data: {
+      trip,
+    },
+  });
+});
 
-    const trip = await Trip.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+exports.updateTrip = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
 
-    res.status(200).json({
-      status: "success",
-      data: {
-        trip,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      error: err.message,
-    });
-  }
-};
+  const trip = await Trip.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
-exports.deleteTrip = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+  if (!trip) return next(new AppError("No data found with that id", 404));
 
-    const trip = await Trip.findByIdAndDelete(id);
+  res.status(200).json({
+    status: "success",
+    data: {
+      trip,
+    },
+  });
+});
 
-    if (!trip) throw new Error("No trip found with that id");
+exports.deleteTrip = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const trip = await Trip.findByIdAndDelete(id);
 
-    res.status(204).json({
-      status: "success",
-      data: {
-        trip: null,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      error: err.message,
-    });
-  }
-};
+  if (!trip) return next(new AppError("No data found with that id", 404));
+
+  res.status(204).json({
+    status: "success",
+    data: {
+      trip: null,
+    },
+  });
+});
