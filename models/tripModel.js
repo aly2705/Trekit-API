@@ -17,6 +17,10 @@ const tripSchema = new mongoose.Schema({
     type: Date,
     required: [true, "A trip must have a starting date"],
   },
+  coords: {
+    type: [Number],
+    required: [true, "A trip must have a set of coords [lat, lng]"],
+  },
   endDate: {
     type: Date,
     required: [true, "A trip must have an ending date"],
