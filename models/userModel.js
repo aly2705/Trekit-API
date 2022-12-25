@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// PASSWORD ENCRYPTION
+// PRE_SAVE MIDDLEWARE: PASSWORD ENCRYPTION
 userSchema.pre("save", async function (next) {
   // Password not modified, we do not encrypt (this middleware will run after user creation and password update)
   if (!this.isModified("password")) return next();
@@ -49,6 +49,13 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined; //don't need to store it in the DB
 });
 
+// INSTANCE METHOD:  CHECK IF PASSWORD IS CORRECT
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bycrpt.compare(candidatePassword, userPassword);
+};
 // eslint-disable-next-line new-cap
 const User = new mongoose.model("User", userSchema);
 
