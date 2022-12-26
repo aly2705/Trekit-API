@@ -4,6 +4,8 @@ Trekit API is a very simple RESTful API built to support the Trekit-App, a web a
 
 # 📁 Collection: Trips
 
+Has protected routes that allow an user to read its trips, write new ones or perform updating and deleting.
+
 ## End-point: Add New Trip
 
 All fields are required, besides 'description'
@@ -110,6 +112,8 @@ All fields are required, besides 'description'
 
 # 📁 Collection: Users
 
+Has routes for getting and updating user data as well as deactivating the account
+
 ## End-point: Get Current User
 
 ### Method: GET
@@ -175,6 +179,8 @@ Allowed fileds: name,email,gender
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 # 📁 Collection: Auth
+
+Has the authentication routes as well as the special route for updating passwords
 
 ## End-point: Signup
 
