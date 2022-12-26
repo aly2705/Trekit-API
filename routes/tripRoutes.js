@@ -1,17 +1,18 @@
 const express = require("express");
 const tripController = require("../controllers/tripController");
+const authController = require("../controllers/authController");
 
 const router = express.Router();
 
 router
   .route("/")
-  .get(tripController.getAllTrips)
-  .post(tripController.createNewTrip);
+  .get(authController.protect, tripController.getAllTrips)
+  .post(authController.protect, tripController.createNewTrip);
 
 router
   .route("/:id")
-  .get(tripController.getTripById)
-  .patch(tripController.updateTrip)
-  .delete(tripController.deleteTrip);
+  .get(authController.protect, tripController.getTripById)
+  .patch(authController.protect, tripController.updateTrip)
+  .delete(authController.protect, tripController.deleteTrip);
 
 module.exports = router;

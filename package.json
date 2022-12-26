@@ -6,7 +6,10 @@
   "scripts": {
     "start": "nodemon server.js"
   },
-  "author": "",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "author": "Alexandra Simion",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

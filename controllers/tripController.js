@@ -4,7 +4,7 @@ const Trip = require("../models/tripModel");
 const AppError = require("../utilities/AppError");
 
 exports.getAllTrips = catchAsync(async (req, res, next) => {
-  const trips = await Trip.find();
+  const trips = await Trip.find({ user: req.user._id });
 
   res.status(200).json({
     status: "success",
@@ -16,7 +16,8 @@ exports.getAllTrips = catchAsync(async (req, res, next) => {
 });
 
 exports.createNewTrip = catchAsync(async (req, res, next) => {
-  const trips = await Trip.create(req.body);
+  const tripObj = { ...req.body, user: req.user._id };
+  const trips = await Trip.create(tripObj);
 
   res.status(201).json({
     status: "success",
@@ -33,6 +34,12 @@ exports.getTripById = catchAsync(async (req, res, next) => {
   const trip = await Trip.findById(id);
 
   if (!trip) return next(new AppError("No data found with that id", 404));
+
+  if (trip.user !== req.user._id) {
+    return next(
+      new AppError("You cannot access trips created by other users", 403)
+    );
+  }
 
   res.status(200).json({
     status: "success",
@@ -52,6 +59,12 @@ exports.updateTrip = catchAsync(async (req, res, next) => {
 
   if (!trip) return next(new AppError("No data found with that id", 404));
 
+  if (trip.user !== req.user._id) {
+    return next(
+      new AppError("You cannot update trips created by other users", 403)
+    );
+  }
+
   res.status(200).json({
     status: "success",
     data: {
@@ -65,6 +78,12 @@ exports.deleteTrip = catchAsync(async (req, res, next) => {
   const trip = await Trip.findByIdAndDelete(id);
 
   if (!trip) return next(new AppError("No data found with that id", 404));
+
+  if (trip.user !== req.user._id) {
+    return next(
+      new AppError("You cannot delete trips created by other users", 403)
+    );
+  }
 
   res.status(204).json({
     status: "success",

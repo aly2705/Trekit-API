@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema({
       message: "Password confirm must be the same as password",
     },
   },
+  passwordChangedAt: { type: Date },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // PRE_SAVE MIDDLEWARE: PASSWORD ENCRYPTION
@@ -49,12 +55,36 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined; //don't need to store it in the DB
 });
 
+// ON UPDATE PASSWORD: set passwordChangedAT
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
 // INSTANCE METHOD:  CHECK IF PASSWORD IS CORRECT
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
 ) {
   return await bycrpt.compare(candidatePassword, userPassword);
+};
+
+// CHECK IF USER HAS CHANGED PASSWORD AFTER TOKEN WAS ISSUED
+userSchema.methods.changedPasswordAfter = function (tokenIAT) {
+  if (this.passwordChangedAt) {
+    const tokenTimestamp = tokenIAT * 1000;
+    const passwordTimestamp = new Date(this.passwordChangedAt).getTime();
+
+    return tokenTimestamp < passwordTimestamp;
+  }
+  return false;
 };
 // eslint-disable-next-line new-cap
 const User = new mongoose.model("User", userSchema);

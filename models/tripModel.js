@@ -32,6 +32,11 @@ const tripSchema = new mongoose.Schema({
     },
   },
   description: String,
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: [true, "A trip must belong to a user"],
+  },
 });
 
 // eslint-disable-next-line new-cap
