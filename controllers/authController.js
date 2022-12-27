@@ -74,7 +74,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("Wrong password! Please try again!", 401));
 
   // 3) If everything ok, send JWT
-  createSendToken(user, res, 200);
+  createSendToken(user, res, 200, true);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
