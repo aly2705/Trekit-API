@@ -5,6 +5,7 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const cors = require("cors");
 const tripRouter = require("./routes/tripRoutes");
 const userRouter = require("./routes/userRoutes");
 const globalErrorHandler = require("./controllers/errorController");
@@ -14,6 +15,18 @@ const app = express();
 
 //Dev logging
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
+
+// Implement CORS
+app.use(cors());
+
+// app.use(
+//   cors({
+//     origin: "https://trekit.alexandrasimion.com",
+//   })
+// );
+
+// options - http method for pre-flight phase (when put, patch, delete will happen)
+app.options("*", cors());
 
 //////////////////////////////////////////////////////////////////////
 // SECURITY MIDDLEWARE
