@@ -75,15 +75,17 @@ exports.updateTrip = catchAsync(async (req, res, next) => {
 
 exports.deleteTrip = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const trip = await Trip.findByIdAndDelete(id);
+  const trip = await Trip.findById(id);
 
   if (!trip) return next(new AppError("No data found with that id", 404));
 
-  if (trip.user !== req.user._id) {
+  if (trip.user.toString() !== req.user._id.toString()) {
     return next(
       new AppError("You cannot delete trips created by other users", 403)
     );
   }
+
+  await Trip.findByIdAndDelete(id);
 
   res.status(204).json({
     status: "success",
