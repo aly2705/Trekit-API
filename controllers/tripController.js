@@ -35,7 +35,7 @@ exports.getTripById = catchAsync(async (req, res, next) => {
 
   if (!trip) return next(new AppError("No data found with that id", 404));
 
-  if (trip.user !== req.user._id) {
+  if (trip.user.toString() !== req.user._id.toString()) {
     return next(
       new AppError("You cannot access trips created by other users", 403)
     );
@@ -52,18 +52,32 @@ exports.getTripById = catchAsync(async (req, res, next) => {
 exports.updateTrip = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
-  const trip = await Trip.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  if (new Date(req.body.startDate) > new Date(req.body.endDate)) {
+    return next(new AppError("Start date must be before end date", 400));
+  }
+  const trip = await Trip.findById(id);
+  if (
+    (req.body.startDate &&
+      !req.body.endDate &&
+      new Date(req.body.startDate) > new Date(trip.endDate)) ||
+    (!req.body.startDate &&
+      req.body.endDate &&
+      new Date(trip.startDate) > new Date(req.body.endDate))
+  ) {
+    return next(new AppError("Start date must be before end date", 400));
+  }
 
   if (!trip) return next(new AppError("No data found with that id", 404));
 
-  if (trip.user !== req.user._id) {
+  if (trip.user.toString() !== req.user._id.toString()) {
     return next(
       new AppError("You cannot update trips created by other users", 403)
     );
   }
+
+  await Trip.findByIdAndUpdate(id, req.body, {
+    new: true,
+  });
 
   res.status(200).json({
     status: "success",
