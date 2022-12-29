@@ -35,6 +35,7 @@ const createSendToken = (
   const resObject = {
     status: "success",
     token,
+    expiresIn: process.env.JWT_COOKIE_EXPIRES * 24 * 3600 * 1000,
   };
 
   if (sendUserBack) resObject.user = user;
