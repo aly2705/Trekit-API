@@ -17,13 +17,12 @@ exports.getAllTrips = catchAsync(async (req, res, next) => {
 
 exports.createNewTrip = catchAsync(async (req, res, next) => {
   const tripObj = { ...req.body, user: req.user._id };
-  const trips = await Trip.create(tripObj);
+  const trip = await Trip.create(tripObj);
 
   res.status(201).json({
     status: "success",
-    results: trips.length,
     data: {
-      trips,
+      trip,
     },
   });
 });
@@ -75,14 +74,14 @@ exports.updateTrip = catchAsync(async (req, res, next) => {
     );
   }
 
-  await Trip.findByIdAndUpdate(id, req.body, {
+  const updatedTrip = await Trip.findByIdAndUpdate(id, req.body, {
     new: true,
   });
 
   res.status(200).json({
     status: "success",
     data: {
-      trip,
+      updatedTrip,
     },
   });
 });
